@@ -6,7 +6,7 @@ Le projet est composé d'un backend Node.js/TypeScript et d'un frontend React/Ty
 
 ## Structure du projet
 ```
-game-event-tracker/
+ce-tot-to-discord/
 ├── backend/                  # API Node.js
 │   ├── src/
 │   │   ├── types/           # Types TypeScript

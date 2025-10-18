@@ -43,7 +43,7 @@ function Navigation() {
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
               <Activity className="h-6 w-6" />
-              <span className="text-lg font-bold">Game Event Tracker</span>
+              <span className="text-lg font-bold">CE - Tot To Discord</span>
             </div>
             
             <div className="flex space-x-1">

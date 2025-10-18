@@ -38,7 +38,7 @@ export function Login() {
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
               <Activity className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">Game Event Tracker</span>
+              <span className="text-2xl font-bold">CE - Tot To Discord</span>
             </div>
           </div>
           <div>

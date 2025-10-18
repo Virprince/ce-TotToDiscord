@@ -1,4 +1,4 @@
-# Game Event Tracker
+# CE - Tot To Discord
 
 Système de tracking d'événements de jeu avec intégration Discord via webhooks.
 
@@ -25,7 +25,7 @@ Système de tracking d'événements de jeu avec intégration Discord via webhook
 1. Cloner le projet :
 ```bash
 git clone <repository-url>
-cd game-event-tracker
+cd ce-tot-to-discord
 ```
 
 2. Installer les dépendances :

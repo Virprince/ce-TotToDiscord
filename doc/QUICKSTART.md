@@ -15,13 +15,13 @@ node --version
 ```bash
 # Cloner le projet
 git clone <repository-url>
-cd game-event-tracker
+cd ce-tot-to-discord
 
 # Installer les dépendances
 npm install
 
 # Créer la configuration
-cp config.example.json config.json
+cp config.json.dist config.json
 
 # Créer le dossier de logs
 mkdir logs

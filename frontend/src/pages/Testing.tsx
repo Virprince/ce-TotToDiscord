@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 
 export function TestingPage() {
   const [webhookUrl, setWebhookUrl] = useState('');
-  const [webhookMessage, setWebhookMessage] = useState('🧪 Test de webhook depuis Game Event Tracker');
+  const [webhookMessage, setWebhookMessage] = useState('🧪 Test de webhook depuis CE - Tot To Discord');
   const [webhookResult, setWebhookResult] = useState<{ success: boolean; error?: string } | null>(null);
   
   const [template, setTemplate] = useState('🚨 [[displayName]] a commis un crime !');

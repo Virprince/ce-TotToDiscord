@@ -1,6 +1,6 @@
-# Game Event Tracker - Frontend
+# CE - Tot To Discord - Frontend
 
-Interface web d'administration pour Game Event Tracker.
+Interface web d'administration pour CE - Tot To Discord.
 
 ## Installation
 

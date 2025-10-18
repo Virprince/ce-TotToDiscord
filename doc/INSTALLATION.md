@@ -1,4 +1,4 @@
-# Installation complète - Game Event Tracker
+# Installation complète - CE - Tot To Discord
 
 Guide d'installation pas à pas pour mettre en place le système complet (backend + frontend).
 
@@ -9,142 +9,6 @@ Guide d'installation pas à pas pour mettre en place le système complet (backen
 - Un serveur Discord avec permissions pour créer des webhooks
 
 ## 🚀 Installation
-
-### Étape 1 : Créer la structure du projet
-
-```bash
-# Créer le dossier principal
-mkdir game-event-tracker
-cd game-event-tracker
-
-# Créer les sous-dossiers
-mkdir backend frontend
-```
-
-### Étape 2 : Installation du Backend
-
-```bash
-cd backend
-
-# Créer package.json
-npm init -y
-
-# Installer les dépendances
-npm install fastify@^4.28.1 \
-  @fastify/cors@^9.0.1 \
-  chokidar@^3.6.0 \
-  node-fetch@^3.3.2 \
-  p-queue@^8.0.1 \
-  pino-pretty@^11.2.2 \
-  winston@^3.14.2 \
-  winston-daily-rotate-file@^5.0.0
-
-# Installer les dépendances de développement
-npm install --save-dev \
-  @types/node@^20.14.15 \
-  tsx@^4.17.0 \
-  typescript@^5.5.4
-
-# Créer la structure des dossiers
-mkdir -p src/{types,config,services,routes}
-mkdir logs
-
-# Copier les fichiers sources (depuis les artifacts précédents)
-# - src/types/index.ts
-# - src/config/loader.ts
-# - src/config/validator.ts
-# - src/services/parsers.ts
-# - src/services/normalizer.ts
-# - src/services/ruleEngine.ts
-# - src/services/templating.ts
-# - src/services/logger.ts
-# - src/services/discordQueue.ts
-# - src/routes/index.ts
-# - src/app.ts
-# - package.json (mettre à jour avec les scripts)
-# - tsconfig.json
-# - .gitignore
-
-# Créer la configuration
-cp config.example.json config.json
-
-# Éditer config.json et remplacer les URLs de webhooks
-nano config.json  # ou votre éditeur préféré
-```
-
-**Contenu minimal de package.json :**
-```json
-{
-  "name": "game-event-tracker-backend",
-  "version": "2.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "type-check": "tsc --noEmit"
-  }
-}
-```
-
-### Étape 3 : Installation du Frontend
-
-```bash
-cd ../frontend
-
-# Créer le projet Vite + React + TypeScript
-npm create vite@latest . -- --template react-ts
-
-# Installer les dépendances supplémentaires
-npm install \
-  @radix-ui/react-accordion@^1.2.0 \
-  @radix-ui/react-alert-dialog@^1.1.1 \
-  @radix-ui/react-checkbox@^1.1.1 \
-  @radix-ui/react-dialog@^1.1.1 \
-  @radix-ui/react-dropdown-menu@^2.1.1 \
-  @radix-ui/react-label@^2.1.0 \
-  @radix-ui/react-popover@^1.1.1 \
-  @radix-ui/react-select@^2.1.1 \
-  @radix-ui/react-separator@^1.1.0 \
-  @radix-ui/react-slot@^1.1.0 \
-  @radix-ui/react-switch@^1.1.0 \
-  @radix-ui/react-tabs@^1.1.0 \
-  @radix-ui/react-toast@^1.2.1 \
-  @tanstack/react-query@^5.56.2 \
-  class-variance-authority@^0.7.0 \
-  clsx@^2.1.1 \
-  lucide-react@^0.441.0 \
-  react-hook-form@^7.53.0 \
-  react-router-dom@^6.26.2 \
-  tailwind-merge@^2.5.2 \
-  zod@^3.23.8
-
-# Installer Tailwind CSS
-npm install --save-dev \
-  tailwindcss@^3.4.11 \
-  postcss@^8.4.47 \
-  autoprefixer@^10.4.20
-
-# Créer la structure
-mkdir -p src/{components/ui,pages,lib,types}
-
-# Copier tous les fichiers sources (depuis les artifacts)
-# - src/components/ui/* (button, card, input, label, badge)
-# - src/components/RuleEditor.tsx
-# - src/pages/* (Dashboard, Rules, WatchedEntities, Logs, Testing, Settings)
-# - src/lib/api.ts
-# - src/lib/utils.ts
-# - src/types/index.ts
-# - src/App.tsx
-# - src/main.tsx
-# - src/index.css
-# - index.html
-# - vite.config.ts
-# - tailwind.config.js
-# - tsconfig.json
-# - tsconfig.node.json
-# - postcss.config.js
-```
 
 ### Étape 4 : Configuration Discord
 
@@ -185,7 +49,7 @@ npm run dev
 
 Vous devriez voir :
 ```
-VITE v5.x.x  ready in xxx ms
+VITE v7.x.x  ready in xxx ms
 
 ➜  Local:   http://localhost:5173/
 ➜  Network: use --host to expose
@@ -288,7 +152,7 @@ DEBUG=* npm run dev
 
 ## 🎉 Installation terminée !
 
-Votre système Game Event Tracker est maintenant opérationnel.
+Votre système CE - Tot To Discord est maintenant opérationnel.
 
 Pour démarrer le système :
 ```bash

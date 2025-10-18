@@ -1,8 +1,8 @@
-# Guide Complet - Game Event Tracker
+# Guide Complet - CE - Tot To Discord
 
 ## 🎯 Vue d'ensemble
 
-Game Event Tracker est un système complet de tracking d'événements de jeu vidéo avec intégration Discord. Il se compose de deux parties :
+CE - Tot To Discord est un système complet de tracking d'événements Conan Exile avec les modules Tot pour une intégration Discord. Il se compose de deux parties :
 
 - **Backend** : API Node.js/TypeScript avec moteur de règles sophistiqué
 - **Frontend** : Interface web React pour l'administration
@@ -30,8 +30,16 @@ cd backend
 npm install
 
 # Configuration
-cp config.example.json config.json
-# Éditez config.json et ajoutez vos webhooks Discord
+cp config.json.dist config.json
+
+# Modifiez le userName si besoin
+
+# Générez le mot de passe hashé
+npx tsx scripts/hash-password.ts votreMotDePasse
+# Copiez le mot de passe hashé dans auth.passwordHash, si vous oubliez le mot de passe il faudra en générer un nouveau et modifiez le config.json
+
+# Modifiez auth.jwtSecret avec votre propre JWT (https://jwtsecrets.com/#generator)
+
 
 # Créer le dossier logs
 mkdir logs
@@ -192,6 +200,11 @@ frontend/
   "meta": {
     "version": "2.0",
     "lastModified": "2025-10-18T12:00:00Z"
+  },
+  "auth": {
+    "username": "admin",
+    "passwordHash": "$2b$10$.....",
+    "jwtSecret": "4692f1a86b9888d25de2047d2edbc9bc3483e8abe7c97b55a0cd220b1d2d0c65"
   },
   "global": {
     "logDirectory": "./logs",
@@ -370,7 +383,7 @@ npm install -g pm2
 # Backend
 cd backend
 npm run build
-pm2 start dist/app.js --name game-event-tracker
+pm2 start dist/app.js --name ce-tot-to-discord
 
 # Frontend (build et servir via nginx/autre)
 cd frontend
@@ -410,15 +423,15 @@ EXPOSE 80
 ### Option 3 : Systemd
 
 ```ini
-# /etc/systemd/system/game-event-tracker.service
+# /etc/systemd/system/ce-tot-to-discord.service
 [Unit]
-Description=Game Event Tracker
+Description=CE - Tot To Discord
 After=network.target
 
 [Service]
 Type=simple
 User=node
-WorkingDirectory=/opt/game-event-tracker
+WorkingDirectory=/opt/ce-tot-to-discord
 ExecStart=/usr/bin/node dist/app.js
 Restart=on-failure
 
@@ -427,8 +440,8 @@ WantedBy=multi-user.target
 ```
 
 ```bash
-sudo systemctl enable game-event-tracker
-sudo systemctl start game-event-tracker
+sudo systemctl enable ce-tot-to-discord
+sudo systemctl start ce-tot-to-discord
 ```
 
 ## 🔧 Dépannage
