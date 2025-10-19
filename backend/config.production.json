@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "version": "2.0.0",
+    "lastModified": "2024-10-18T12:00:00.000Z"
+  },
+  "auth": {
+    "username": "admin",
+    "passwordHash": "REPLACE_WITH_GENERATED_HASH",
+    "jwtSecret": "REPLACE_WITH_RANDOM_32_CHAR_SECRET"
+  },
+  "global": {
+    "logDirectory": "./logs",
+    "logRotation": "monthly",
+    "logDateFormat": "YYYY-MM-DD HH:mm:ss",
+    "logMessageTemplate": "[[date]] | [[steamId]] | [[fullIdentity]] | [[eventId]] | [[params]]",
+    "discordRateLimit": {
+      "requestsPerSecond": 4,
+      "maxQueueSize": 1000,
+      "onQueueFull": "drop"
+    }
+  },
+  "watchedEntities": [
+    {
+      "id": "example_player",
+      "name": "Exemple Joueur",
+      "enabled": true,
+      "matchType": "steamId",
+      "value": "76561198000000000",
+      "description": "Exemple d'entité surveillée"
+    }
+  ],
+  "rules": [
+    {
+      "id": "crime_tracking",
+      "name": "Suivi des crimes",
+      "enabled": true,
+      "priority": 20,
+      "stopPropagation": false,
+      "conditions": {
+        "eventId": "FlowChartLog",
+        "parsed": {
+          "tags": {
+            "contains": ["CRIME"],
+            "matchMode": "any"
+          }
+        }
+      },
+      "actions": {
+        "log": {
+          "enabled": true,
+          "fileName": "crimes"
+        },
+        "discord": [
+          {
+            "id": "crime_public",
+            "webhook": "https://discord.com/api/webhooks/YOUR_PUBLIC_WEBHOOK_URL_HERE",
+            "webhookType": "public",
+            "message": "🚨 [[displayName]] a commis un crime !"
+          },
+          {
+            "id": "crime_admin",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ADMIN_WEBHOOK_URL_HERE",
+            "webhookType": "admin",
+            "message": "🚨 **Crime détecté**\n👤 **Joueur**: [[fullIdentity]]\n📋 **Détails**: [[params]]"
+          }
+        ]
+      }
+    }
+  ]
+}
