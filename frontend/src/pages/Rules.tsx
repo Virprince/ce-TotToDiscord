@@ -200,30 +200,26 @@ export function RulesPage() {
               <CardContent className="space-y-4">
                 {/* Conditions */}
                 <div>
-                  <h4 className="text-sm font-medium mb-2">Conditions</h4>
+                  <h4 className="text-sm font-medium mb-2">Déclencheur</h4>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    {rule.conditions.eventId && (
-                      <div>Event ID: <code className="bg-muted px-1 py-0.5 rounded">{rule.conditions.eventId}</code></div>
+                    {rule.trigger.eventId && (
+                      <div>Event ID: <code className="bg-muted px-1 py-0.5 rounded">{rule.trigger.eventId}</code></div>
                     )}
-                    {rule.conditions.parsed?.tags && (
+                    {rule.trigger.parsed?.tags && (
                       <div>
-                        Tags: {rule.conditions.parsed.tags.contains?.map(tag => (
+                        Tags: {rule.trigger.parsed.tags.contains?.map(tag => (
                           <Badge key={tag} variant="outline" className="ml-1">{tag}</Badge>
                         ))}
                       </div>
                     )}
-                    {rule.conditions.parsed?.action && (
+                    {rule.trigger.parsed?.action && (
                       <div>
-                        Actions: {rule.conditions.parsed.action.in?.map(action => (
+                        Actions: {rule.trigger.parsed.action.in?.map(action => (
                           <Badge key={action} variant="outline" className="ml-1">{action}</Badge>
                         ))}
                       </div>
                     )}
-                    {rule.conditions.watchedEntity && (
-                      <div>
-                        Entités surveillées: {rule.conditions.watchedEntity.anyOf?.length || 0}
-                      </div>
-                    )}
+
                   </div>
                 </div>
                 
@@ -238,7 +234,14 @@ export function RulesPage() {
                     )}
                     {rule.actions.discord?.map(webhook => (
                       <Badge key={webhook.id} variant="secondary">
-                        💬 Discord ({webhook.webhookType || 'admin'})
+                        💬 Discord : {webhook.name} ({webhook.webhookType || 'admin'})
+                        {/* s'il y a des entités surveillées, on les affiche */}
+                        {webhook.conditions?.watchedEntity && (
+                          <div className="ml-2">
+                             🕵️ : {webhook.conditions.watchedEntity.anyOf?.length || 0}
+                          </div>
+                        )}
+
                       </Badge>
                     ))}
                   </div>

@@ -117,7 +117,7 @@ Types de correspondance :
       "enabled": true,
       "priority": 20,
       "stopPropagation": false,
-      "conditions": {
+      "trigger": {
         "eventId": "FlowChartLog",
         "parsed": {
           "tags": {
@@ -175,13 +175,13 @@ Types de correspondance :
 - `[[parsed.tags.0]]` : Premier tag
 - `[[parsed.tags.1]]` : Deuxième tag, etc.
 
-### Conditions
+### Déclencheurs
 
-#### Conditions simples
+#### Déclencheurs simples
 
 ```json
 {
-  "conditions": {
+  "trigger": {
     "eventId": "FlowChartLog",
     "charName": {
       "equals": "FOO"
@@ -190,7 +190,7 @@ Types de correspondance :
 }
 ```
 
-#### Conditions sur chaînes
+#### Déclencheurs sur chaînes
 
 ```json
 {
@@ -205,7 +205,7 @@ Types de correspondance :
 }
 ```
 
-#### Conditions sur données parsées
+#### Déclencheurs sur données parsées
 
 ```json
 {

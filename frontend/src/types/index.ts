@@ -1,5 +1,6 @@
 // Types synchronisés avec le backend
 
+// ===== ENTITÉS SURVEILLÉES =====
 export type WatchedEntity = {
     id: string;
     name: string;
@@ -10,6 +11,7 @@ export type WatchedEntity = {
     createdAt: string;
   };
   
+  // ===== CONDITIONS DE TYPE STRING =====
   export type StringCondition = {
     equals?: string;
     in?: string[];
@@ -19,10 +21,28 @@ export type WatchedEntity = {
     regex?: string;
   };
   
-  export type RuleConditions = {
+  // ===== DÉCLENCHEURS =====
+  export type RuleTrigger = {
     eventId?: string;
     eventType?: string;
     eventCategory?: string;
+    parsed?: ParsedParams;
+  };
+
+  // ===== PARAMÈTRES PARSÉS =====
+  export type ParsedParams = {
+    action?: StringCondition;
+    target?: StringCondition;
+    result?: { in?: ("Success" | "Failure")[] };
+    tags?: {
+      contains?: string[];
+      notContains?: string[];
+      matchMode?: "any" | "all";
+    };
+  };
+
+  // ===== CONDITIONS LOGIQUES =====
+  export type RuleConditions = {
     
     steamId?: StringCondition;
     charName?: StringCondition;
@@ -34,25 +54,17 @@ export type WatchedEntity = {
       noneOf?: string[];
     };
     
-    parsed?: {
-      action?: StringCondition;
-      target?: StringCondition;
-      result?: { in?: ("Success" | "Failure")[] };
-      
-      tags?: {
-        contains?: string[];
-        notContains?: string[];
-        matchMode?: "any" | "all";
-      };
-    };
+    parsed?: ParsedParams;
     
     AND?: RuleConditions[];
     OR?: RuleConditions[];
     NOT?: RuleConditions;
   };
   
+  // ===== WEBHOOK =====
   export type DiscordWebhook = {
     id: string;
+    name: string;
     webhook: string;
     webhookType?: "public" | "admin";
     message: string;
@@ -60,6 +72,7 @@ export type WatchedEntity = {
     conditions?: RuleConditions;
   };
   
+  // ===== ACTIONS DE RÈGLE =====
   export type RuleActions = {
     log?: {
       enabled: boolean;
@@ -69,6 +82,7 @@ export type WatchedEntity = {
     discord?: DiscordWebhook[];
   };
   
+  // ===== RÈGLE =====
   export type Rule = {
     id: string;
     name: string;
@@ -76,10 +90,11 @@ export type WatchedEntity = {
     priority: number;
     stopPropagation: boolean;
     allowDuplicates?: boolean;
-    conditions: RuleConditions;
+    trigger: RuleTrigger;
     actions: RuleActions;
   };
   
+  // ===== CONFIGURATION =====
   export type Config = {
     meta: {
       version: string;
@@ -100,18 +115,21 @@ export type WatchedEntity = {
     rules: Rule[];
   };
   
+  // ===== ERREUR DE VALIDATION =====
   export type ValidationError = {
     field: string;
     message: string;
     severity: "error" | "warning";
   };
   
+  // ===== RÉSULTAT DE VALIDATION =====
   export type ValidationResult = {
     valid: boolean;
     errors: ValidationError[];
     warnings: ValidationError[];
   };
   
+  // ===== STATISTIQUES DE LA FILE D'ATTENTE =====
   export type QueueStats = {
     pending: number;
     size: number;

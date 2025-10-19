@@ -2,6 +2,7 @@ import {
     Config,
     NormalizedEvent,
     Rule,
+    RuleTrigger,
     RuleConditions,
     StringCondition,
     MatchResult,
@@ -22,12 +23,12 @@ import {
       .sort((a, b) => b.priority - a.priority);
     
     for (const rule of sortedRules) {
-      const matchResult = evaluateConditions(event, rule.conditions, config.watchedEntities);
-      
-      if (matchResult.matches) {
+      // on regarde si le trigger matche
+      const triggerMatch = evaluateTrigger(event, rule.trigger);
+      if (triggerMatch.matches) {
         matchedRules.push({
           rule,
-          matchedEntities: matchResult.matchedEntityIds
+          matchedEntities: triggerMatch.matchedEntityIds
         });
         
         if (rule.stopPropagation) {
@@ -41,6 +42,30 @@ import {
     return buildExecutionPlan(event, dedupedRules, config);
   }
   
+
+  // Évalue si l'événement matche le trigger
+  export function evaluateTrigger(event: NormalizedEvent, trigger: RuleTrigger): MatchResult {
+
+    if (trigger.eventId && event.raw.eventId !== trigger.eventId) {
+      return { matches: false, matchedEntityIds: [] };
+    }
+    
+    if (trigger.eventType && event.raw.eventType !== trigger.eventType) {
+      return { matches: false, matchedEntityIds: [] };
+    }
+    
+    if (trigger.eventCategory && event.raw.eventCategory !== trigger.eventCategory) {
+      return { matches: false, matchedEntityIds: [] };
+    }
+
+    return { 
+      matches: true, 
+      matchedEntityIds: []
+    };
+    
+  }
+
+
   /**
    * Évalue les conditions d'une règle
    */
@@ -70,17 +95,7 @@ import {
       if (result.matches) return { matches: false, matchedEntityIds: [] };
     }
     
-    if (conditions.eventId && event.raw.eventId !== conditions.eventId) {
-      return { matches: false, matchedEntityIds: [] };
-    }
     
-    if (conditions.eventType && event.raw.eventType !== conditions.eventType) {
-      return { matches: false, matchedEntityIds: [] };
-    }
-    
-    if (conditions.eventCategory && event.raw.eventCategory !== conditions.eventCategory) {
-      return { matches: false, matchedEntityIds: [] };
-    }
     
     if (conditions.steamId && !matchStringCondition(event.raw.steamId, conditions.steamId)) {
       return { matches: false, matchedEntityIds: [] };
@@ -269,6 +284,7 @@ import {
     const discordActions: ExecutionPlan['discordActions'] = [];
     
     for (const { rule, matchedEntities } of matchedRules) {
+      // on ajoute les actions de log
       if (rule.actions.log?.enabled) {
         const message = rule.actions.log.message || config.global.logMessageTemplate;
         logActions.push({
@@ -277,8 +293,10 @@ import {
         });
       }
       
+      // on ajoute les actions de discord
       if (rule.actions.discord) {
         for (const webhook of rule.actions.discord) {
+          // on évalue les conditions du webhook
           if (webhook.conditions) {
             const condResult = evaluateConditions(event, webhook.conditions, config.watchedEntities);
             if (!condResult.matches) {

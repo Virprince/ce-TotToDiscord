@@ -57,12 +57,29 @@ export type RawEvent = {
     createdAt: string;
   };
   
-  // ===== CONDITIONS =====
-  
-  export type RuleConditions = {
+
+  // ===== DÉCLENCHEURS =====
+  export type RuleTrigger = {
     eventId?: string;
     eventType?: string;
     eventCategory?: string;
+    parsed?: ParsedParams;
+  };
+  
+  export type ParsedConfig = {
+    action?: StringCondition;
+    target?: StringCondition;
+    result?: { in?: ("Success" | "Failure")[] };
+    tags?: {
+      contains?: string[];
+      notContains?: string[];
+      matchMode?: "any" | "all";
+    };
+  };
+
+  // ===== CONDITIONS =====
+  
+  export type RuleConditions = {
     
     steamId?: StringCondition;
     charName?: StringCondition;
@@ -74,18 +91,9 @@ export type RawEvent = {
       noneOf?: string[];
     };
     
-    parsed?: {
-      action?: StringCondition;
-      target?: StringCondition;
-      result?: { in?: ("Success" | "Failure")[] };
-      
-      tags?: {
-        contains?: string[];
-        notContains?: string[];
-        matchMode?: "any" | "all";
-      };
-    };
+    parsed?: ParsedConfig;
     
+    // ===== CONDITIONS LOGIQUES =====
     AND?: RuleConditions[];
     OR?: RuleConditions[];
     NOT?: RuleConditions;
@@ -113,6 +121,7 @@ export type RawEvent = {
   
   export type DiscordWebhook = {
     id: string;
+    name: string;
     webhook: string;
     webhookType?: "public" | "admin";
     message: string;
@@ -129,7 +138,7 @@ export type RawEvent = {
     priority: number;
     stopPropagation: boolean;
     allowDuplicates?: boolean;
-    conditions: RuleConditions;
+    trigger: RuleTrigger;
     actions: RuleActions;
   };
   

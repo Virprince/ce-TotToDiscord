@@ -22,7 +22,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
       enabled: true,
       priority: 10,
       stopPropagation: false,
-      conditions: {},
+      trigger: {},
       actions: {
         discord: []
       }
@@ -37,9 +37,9 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
   
   // Initialiser les états locaux quand les données changent
   useEffect(() => {
-    setTagsInput(formData.conditions.parsed?.tags?.contains?.join(', ') || '');
-    setActionsInput(formData.conditions.parsed?.action?.in?.join(', ') || '');
-  }, [formData.conditions.parsed]);
+    setTagsInput(formData.trigger.parsed?.tags?.contains?.join(', ') || '');
+    setActionsInput(formData.trigger.parsed?.action?.in?.join(', ') || '');
+  }, [formData.trigger.parsed]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,14 +66,14 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
     }
 
     // on s'assure que les conditions sont valides en fonction de l'eventId
-    if (formData.conditions.eventId === 'FlowChartLog') {
-      if (!formData.conditions.parsed?.tags?.contains?.length) {
+    if (formData.trigger.eventId === 'FlowChartLog') {
+      if (!formData.trigger.parsed?.tags?.contains?.length) {
         validationErrors.push('Les tags sont requis');
       }
     }
     
-    if (formData.conditions.eventId === 'RR_ABILITY_USE') {
-      if (!formData.conditions.parsed?.action?.in?.length) {
+    if (formData.trigger.eventId === 'RR_ABILITY_USE') {
+      if (!formData.trigger.parsed?.action?.in?.length) {
         validationErrors.push('Les actions sont requises');
       }
     }
@@ -86,15 +86,15 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
     // Nettoyer les données selon le type d'événement
     const cleanedFormData = { ...formData };
     
-    if (cleanedFormData.conditions.eventId === 'FlowChartLog') {
+    if (cleanedFormData.trigger.eventId === 'FlowChartLog') {
       // Pour FlowChartLog, on retire les actions (RR_ABILITY_USE)
-      if (cleanedFormData.conditions.parsed?.action) {
-        delete cleanedFormData.conditions.parsed.action;
+      if (cleanedFormData.trigger.parsed?.action) {
+        delete cleanedFormData.trigger.parsed.action;
       }
-    } else if (cleanedFormData.conditions.eventId === 'RR_ABILITY_USE') {
+    } else if (cleanedFormData.trigger.eventId === 'RR_ABILITY_USE') {
       // Pour RR_ABILITY_USE, on retire les tags (FlowChartLog)
-      if (cleanedFormData.conditions.parsed?.tags) {
-        delete cleanedFormData.conditions.parsed.tags;
+      if (cleanedFormData.trigger.parsed?.tags) {
+        delete cleanedFormData.trigger.parsed.tags;
       }
     }
     
@@ -110,6 +110,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
           ...(formData.actions.discord || []),
           {
             id: `webhook_${Date.now()}`,
+            name: '',
             webhook: '',
             message: '',
             webhookType: 'admin'
@@ -252,7 +253,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
       {/* Conditions */}
       <Card>
         <CardHeader>
-          <CardTitle>Conditions</CardTitle>
+          <CardTitle>Déclencheur</CardTitle>
           <CardDescription>Définissez quand cette règle doit s'appliquer</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -260,10 +261,10 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
             <Label htmlFor="eventId">Event ID</Label>
             <select
               id="eventId"
-              value={formData.conditions.eventId || ''}
+              value={formData.trigger.eventId || ''}
               onChange={(e) => setFormData({
                 ...formData,
-                conditions: { ...formData.conditions, eventId: e.target.value || undefined }
+                trigger: { ...formData.trigger, eventId: e.target.value || undefined }
               })}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2"
             >
@@ -273,7 +274,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
             </select>
           </div>
           
-          {formData.conditions.eventId === 'FlowChartLog' && (
+          {formData.trigger.eventId === 'FlowChartLog' && (
             <div className="space-y-2">
               <Label>Tags à rechercher</Label>
               <Input
@@ -287,11 +288,11 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
                   const tags = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
                   setFormData({
                     ...formData,
-                    conditions: {
-                      ...formData.conditions,
+                    trigger: {
+                      ...formData.trigger,
                       parsed: {
-                        ...formData.conditions.parsed,
-                        tags: { ...formData.conditions.parsed?.tags, contains: tags }
+                        ...formData.trigger.parsed,
+                        tags: { ...formData.trigger.parsed?.tags, contains: tags }
                       }
                     }
                   });
@@ -300,7 +301,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
             </div>
           )}
           
-          {formData.conditions.eventId === 'RR_ABILITY_USE' && (
+          {formData.trigger.eventId === 'RR_ABILITY_USE' && (
             <div className="space-y-2">
               <Label>Actions à surveiller</Label>
               <Input
@@ -314,10 +315,10 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
                   const actions = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
                   setFormData({
                     ...formData,
-                    conditions: {
-                      ...formData.conditions,
+                    trigger: {
+                      ...formData.trigger,
                       parsed: {
-                        ...formData.conditions.parsed,
+                        ...formData.trigger.parsed,
                         action: { in: actions }
                       }
                     }
@@ -326,43 +327,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
               />
             </div>
           )}
-          
-          <div className="space-y-2">
-            <Label>Entités surveillées</Label>
-            <div className="flex flex-wrap gap-2">
-              {config.watchedEntities.map(entity => {
-                const isSelected = formData.conditions.watchedEntity?.anyOf?.includes(entity.id);
-                return (
-                  <Badge
-                    key={entity.id}
-                    variant={isSelected ? 'default' : 'outline'}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      const current = formData.conditions.watchedEntity?.anyOf || [];
-                      const updated = isSelected
-                        ? current.filter(id => id !== entity.id)
-                        : [...current, entity.id];
-                      
-                      setFormData({
-                        ...formData,
-                        conditions: {
-                          ...formData.conditions,
-                          watchedEntity: updated.length > 0 ? { anyOf: updated } : undefined
-                        }
-                      });
-                    }}
-                  >
-                    {entity.name}
-                  </Badge>
-                );
-              })}
-              {config.watchedEntities.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Aucune entité surveillée configurée
-                </p>
-              )}
-            </div>
-          </div>
+
         </CardContent>
       </Card>
       
@@ -441,6 +406,15 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
               </div>
               
               <div className="space-y-2">
+                <Label>Nom du webhook</Label>
+                <Input
+                  value={webhook.name}
+                  onChange={(e) => updateWebhook(index, { name: e.target.value })}
+                  placeholder="Ex: Suivi des crimes"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label>URL du webhook Discord *</Label>
                 <Input
                   value={webhook.webhook}
@@ -448,7 +422,7 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
                   placeholder="https://discord.com/api/webhooks/..."
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Type de webhook</Label>
                 <select
@@ -490,6 +464,38 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
                 />
                 <span className="text-sm">Autoriser les mentions (@here, @everyone)</span>
               </label>
+
+              <div className="space-y-2">
+            <Label>Entités surveillées</Label>
+            <div className="flex flex-wrap gap-2">
+              {config.watchedEntities.map(entity => {
+                const isSelected = webhook.conditions?.watchedEntity?.anyOf?.includes(entity.id);
+                return (
+                  <Badge
+                    key={entity.id}
+                    variant={isSelected ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      
+                        const current = webhook.conditions?.watchedEntity?.anyOf || [] as string[];
+                        const updated = isSelected
+                          ? current.filter(id => id !== entity.id)
+                          : [...current, entity.id];
+                        
+                        updateWebhook(index, { conditions: { ...webhook.conditions, watchedEntity: updated.length > 0 ? { anyOf: updated } : undefined } });
+                    }}
+                  >
+                    {entity.name}
+                  </Badge>
+                );
+              })}
+              {config.watchedEntities.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Aucune entité surveillée configurée
+                </p>
+              )}
+            </div>
+          </div>
             </div>
           ))}
           
