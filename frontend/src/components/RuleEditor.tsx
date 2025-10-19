@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Rule, Config, DiscordWebhook } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,16 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
   
   const [errors, setErrors] = useState<string[]>([]);
   
+  // États locaux pour les champs de saisie avec virgules
+  const [tagsInput, setTagsInput] = useState('');
+  const [actionsInput, setActionsInput] = useState('');
+  
+  // Initialiser les états locaux quand les données changent
+  useEffect(() => {
+    setTagsInput(formData.conditions.parsed?.tags?.contains?.join(', ') || '');
+    setActionsInput(formData.conditions.parsed?.action?.in?.join(', ') || '');
+  }, [formData.conditions.parsed]);
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -54,13 +64,41 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
         }
       });
     }
+
+    // on s'assure que les conditions sont valides en fonction de l'eventId
+    if (formData.conditions.eventId === 'FlowChartLog') {
+      if (!formData.conditions.parsed?.tags?.contains?.length) {
+        validationErrors.push('Les tags sont requis');
+      }
+    }
+    
+    if (formData.conditions.eventId === 'RR_ABILITY_USE') {
+      if (!formData.conditions.parsed?.action?.in?.length) {
+        validationErrors.push('Les actions sont requises');
+      }
+    }
     
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       return;
     }
     
-    onSave(formData);
+    // Nettoyer les données selon le type d'événement
+    const cleanedFormData = { ...formData };
+    
+    if (cleanedFormData.conditions.eventId === 'FlowChartLog') {
+      // Pour FlowChartLog, on retire les actions (RR_ABILITY_USE)
+      if (cleanedFormData.conditions.parsed?.action) {
+        delete cleanedFormData.conditions.parsed.action;
+      }
+    } else if (cleanedFormData.conditions.eventId === 'RR_ABILITY_USE') {
+      // Pour RR_ABILITY_USE, on retire les tags (FlowChartLog)
+      if (cleanedFormData.conditions.parsed?.tags) {
+        delete cleanedFormData.conditions.parsed.tags;
+      }
+    }
+    
+    onSave(cleanedFormData);
   };
   
   const addWebhook = () => {
@@ -240,8 +278,12 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
               <Label>Tags à rechercher</Label>
               <Input
                 placeholder="Ex: CRIME, LOG (séparés par des virgules)"
-                value={formData.conditions.parsed?.tags?.contains?.join(', ') || ''}
+                value={tagsInput}
                 onChange={(e) => {
+                  setTagsInput(e.target.value);
+                }}
+                onBlur={(e) => {
+                  // Traitement final lors de la perte de focus
                   const tags = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
                   setFormData({
                     ...formData,
@@ -263,8 +305,12 @@ export function RuleEditor({ rule, config, onSave, onCancel }: RuleEditorProps) 
               <Label>Actions à surveiller</Label>
               <Input
                 placeholder="Ex: Pickpocket, Lockpicking (séparés par des virgules)"
-                value={formData.conditions.parsed?.action?.in?.join(', ') || ''}
+                value={actionsInput}
                 onChange={(e) => {
+                  setActionsInput(e.target.value);
+                }}
+                onBlur={(e) => {
+                  // Traitement final lors de la perte de focus
                   const actions = e.target.value.split(',').map(t => t.trim()).filter(Boolean);
                   setFormData({
                     ...formData,

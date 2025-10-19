@@ -27,8 +27,9 @@ function buildVariables(
   event: NormalizedEvent,
   webhookType: 'public' | 'admin'
 ): Record<string, string | number> {
+
   const vars: Record<string, string | number> = {
-    date: event.raw.date,
+    date: event.raw.date ?? new Date().toISOString(),
     eventId: event.raw.eventId,
     eventType: event.raw.eventType,
     eventCategory: event.raw.eventCategory,

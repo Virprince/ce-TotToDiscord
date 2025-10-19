@@ -242,7 +242,10 @@ export async function registerAPIRoutes(
           return;
         }
 
-        const result = replaceVariables(template, sampleEvent, webhookType);
+        const rawEvent = parseEventFromQuery(sampleEvent as any);
+        const event = normalizeEvent(rawEvent);
+
+        const result = replaceVariables(template, event, webhookType);
         reply.send({ result });
       } catch (error) {
         reply.code(500).send({ error: String(error) });
