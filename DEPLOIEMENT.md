@@ -15,7 +15,7 @@ Votre application est maintenant prête pour le déploiement sur o2switch ! Voic
 ## 📁 Structure de déploiement
 
 ```
-backend/
+app/
 ├── dist/                     # ✅ Backend compilé
 ├── public/                   # ✅ Frontend build (copies automatiquement)
 ├── scripts/                  # ✅ Utilitaires (hash password)
@@ -32,7 +32,7 @@ backend/
 ```
 
 ### 2. Upload sur o2switch
-- Uploadez tout le dossier `backend/` vers votre domaine
+- Uploadez tout le dossier `app/` vers votre domaine
 - Renommez `package.production.json` → `package.json`
 - Copiez `config.production.json` → `config.json`
 
@@ -44,18 +44,13 @@ mkdir logs
 npx tsx scripts/hash-password.ts VOTRE_MOT_DE_PASSE
 ```
 
-## 📋 Checklist détaillée
-
-Consultez ces fichiers pour le déploiement :
-- `deploy/README-DEPLOYMENT.md` - Guide complet pas à pas
-- `deploy/upload-checklist.md` - Checklist à cocher
 
 ## 🔧 Configuration cPanel
 
 - **Application Node.js**
 - **Version** : Node.js 18+
 - **Fichier de démarrage** : `dist/app.js`
-- **Domaine** : `ce-tottodiscord.vassharans.com`
+
 
 ## 🎉 Après déploiement
 

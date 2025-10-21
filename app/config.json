@@ -1,0 +1,238 @@
+{
+  "meta": {
+    "version": "2.0",
+    "lastModified": "2025-10-19T23:30:28.682Z"
+  },
+  "auth": {
+    "username": "admin",
+    "passwordHash": "$2b$10$brD/gO7NCEGEXSSju8ncsuefhvpPI6VBaqmfHzGTBlb5TSUfWRCqS",
+    "jwtSecret": "4692f1a86b9888d25de2047d2edbc9bc3483e8abe7c97b55a0cd220b1d2d0c65"
+  },
+  "global": {
+    "logDirectory": "./logs",
+    "logRotation": "monthly",
+    "logDateFormat": "YYYY-MM-DD HH:mm:ss",
+    "logMessageTemplate": "[[date]] | [[steamId]] | [[fullIdentity]] | [[eventId]] | [[params]]",
+    "discordRateLimit": {
+      "requestsPerSecond": 4,
+      "maxQueueSize": 1000,
+      "onQueueFull": "drop"
+    }
+  },
+  "watchedEntities": [
+    {
+      "id": "watch_foo",
+      "name": "Personnage FOO",
+      "enabled": true,
+      "matchType": "charName",
+      "value": "FOO",
+      "description": "Personnage principal suspect",
+      "createdAt": "2025-10-15T10:00:00Z"
+    },
+    {
+      "id": "entity_1760778217938",
+      "name": "Test de joueur",
+      "enabled": true,
+      "matchType": "charName",
+      "value": "Nylath",
+      "description": "test de description",
+      "createdAt": "2025-10-18T09:03:37.938Z"
+    }
+  ],
+  "rules": [
+    {
+      "id": "default_fallback",
+      "name": "Fallback par défaut",
+      "enabled": false,
+      "priority": 0,
+      "stopPropagation": false,
+      "trigger": {},
+      "actions": {
+        "log": {
+          "enabled": false,
+          "fileName": "default"
+        },
+        "discord": []
+      }
+    },
+    {
+      "id": "crime_tracking",
+      "name": "Suivi des crimes (multi-niveau)",
+      "enabled": true,
+      "priority": 20,
+      "stopPropagation": false,
+      "allowDuplicates": false,
+      "trigger": {
+        "eventId": "FlowChartLog",
+        "parsed": {
+          "tags": {
+            "contains": [
+              "CRIME"
+            ],
+            "matchMode": "any"
+          }
+        }
+      },
+      "actions": {
+        "log": {
+          "enabled": true,
+          "fileName": "crimes"
+        },
+        "discord": [
+          {
+            "id": "crime_public",
+            "webhook": "https://discord.com/api/webhooks/YOUR_PUBLIC_WEBHOOK_ID/YOUR_PUBLIC_WEBHOOK_TOKEN",
+            "webhookType": "public",
+            "message": "🚨 [[displayName]] a commis un crime !"
+          },
+          {
+            "id": "crime_admin",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ADMIN_WEBHOOK_ID/YOUR_ADMIN_WEBHOOK_TOKEN",
+            "webhookType": "admin",
+            "message": "**[[fullIdentity]]** a commis un crime\nSteamID: `[[steamId]]`\nDétails: [[params]]"
+          },
+          {
+            "id": "crime_watched_alert",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ALERT_WEBHOOK_ID/YOUR_ALERT_WEBHOOK_TOKEN",
+            "webhookType": "admin",
+            "message": "@here 🚨 **ENTITÉ SURVEILLÉE**\n**Perso:** [[charName]]\n**Alias:** [[actName]]\n**Steam:** [[steamId]]\n**Crime:** [[params]]",
+            "allowMentions": true,
+            "conditions": {
+              "watchedEntity": {
+                "anyOf": [
+                  "watch_foo"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "suspicious_abilities",
+      "name": "Compétences suspectes",
+      "enabled": true,
+      "priority": 15,
+      "stopPropagation": true,
+      "trigger": {
+        "eventId": "RR_ABILITY_USE",
+        "parsed": {
+          "action": {
+            "in": [
+              "Pickpocket",
+              "Lockpicking",
+              "Accuser publiquement"
+            ]
+          }
+        }
+      },
+      "actions": {
+        "log": {
+          "enabled": true,
+          "fileName": "suspicious_abilities"
+        },
+        "discord": [
+          {
+            "id": "ability_admin",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ADMIN_WEBHOOK_ID/YOUR_ADMIN_WEBHOOK_TOKEN",
+            "webhookType": "admin",
+            "message": "⚠️ **[[fullIdentity]]** a utilisé : `[[parsed.action]]` sur `[[parsed.target]]` → [[parsed.result]]"
+          },
+          {
+            "id": "ability_watched_alert",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ALERT_WEBHOOK_ID/YOUR_ALERT_WEBHOOK_TOKEN",
+            "webhookType": "admin",
+            "message": "@here 🚨 **ENTITÉ SURVEILLÉE** utilise une compétence suspecte !\n**Perso:** [[charName]]\n**Alias:** [[actName]]\n**Action:** [[parsed.action]] sur [[parsed.target]]\n**Résultat:** [[parsed.result]]",
+            "allowMentions": true,
+            "conditions": {
+              "watchedEntity": {
+                "anyOf": [
+                  "watch_foo"
+                ]
+              }
+            },
+            "name": "Flicage"
+          }
+        ]
+      }
+    },
+    {
+      "id": "flowchart_log_general",
+      "name": "Logs FlowChart généraux",
+      "enabled": true,
+      "priority": 10,
+      "stopPropagation": false,
+      "trigger": {
+        "eventId": "FlowChartLog",
+        "parsed": {
+          "tags": {
+            "contains": [
+              "LOG"
+            ],
+            "matchMode": "any"
+          }
+        }
+      },
+      "actions": {
+        "log": {
+          "enabled": true,
+          "fileName": "flowchart_logs"
+        },
+        "discord": [
+          {
+            "id": "log_admin",
+            "webhook": "https://discord.com/api/webhooks/YOUR_ADMIN_WEBHOOK_ID/YOUR_ADMIN_WEBHOOK_TOKEN",
+            "webhookType": "admin",
+            "message": "📊 [[params]]"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rule_1760782786843",
+      "name": "Nouvelle règle",
+      "enabled": true,
+      "priority": 10,
+      "stopPropagation": false,
+      "trigger": {
+        "eventId": "RR_ABILITY_USE",
+        "parsed": {
+          "action": {
+            "in": [
+              "testfoo",
+              "bla"
+            ]
+          }
+        },
+        "watchedEntity": {
+          "anyOf": [
+            "watch_foo",
+            "entity_1760778217938"
+          ]
+        }
+      },
+      "actions": {
+        "discord": [
+          {
+            "id": "webhook_1760782819772",
+            "webhook": "https://discord.com/api/webhooks/1369649422543093873/3nNSQVyxaJ6CGJf9UU3ofk5YTLcLTJcHYxzabt5wsNjI03l3x8bv_rqFNEcHOXShIFn4",
+            "message": "fooooooo",
+            "webhookType": "admin",
+            "allowMentions": true,
+            "conditions": {
+              "watchedEntity": {
+                "anyOf": [
+                  "watch_foo"
+                ]
+              }
+            }
+          }
+        ],
+        "log": {
+          "enabled": true,
+          "fileName": "rule_1760782786843"
+        }
+      }
+    }
+  ]
+}
